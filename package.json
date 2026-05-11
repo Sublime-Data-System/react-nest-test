@@ -1,0 +1,18 @@
+{
+  "name": "s2q-interview-test",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:backend": "npm run start:dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "migration:run": "npm run migration:run --workspace backend",
+    "seed": "npm run seed --workspace backend",
+    "test": "npm test --workspace backend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend"
+  }
+}
