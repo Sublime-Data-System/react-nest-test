@@ -2,7 +2,7 @@
 
 This repository is a take-home interview codebase. It contains a small multi-tenant logistics app built with React, NestJS, PostgreSQL, TypeORM, and Ant Design.
 
-Candidates should extend the existing app by adding the RFP Lane Notes feature described in `docs/CANDIDATE_ASSIGNMENT.md`.
+Candidates should extend the existing app by adding the RFP Lane Notes feature and list filtering/pagination behavior described in `docs/CANDIDATE_ASSIGNMENT.md`.
 
 ## Stack
 
@@ -40,6 +40,8 @@ All seeded users use the password `Password123!`.
 | Acme Logistics | user | `user@acme.test` |
 | Bluebird Freight | admin | `admin@bluebird.test` |
 | Bluebird Freight | user | `user@bluebird.test` |
+
+The seed data includes multiple RFPs and enough varied lanes per RFP to exercise filtering and pagination.
 
 ## Useful Commands
 

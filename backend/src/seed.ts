@@ -44,13 +44,45 @@ const tenants = [
 ];
 
 const lanes = [
-  ['Chicago', 'IL', 'Dallas', 'TX', 'Dry Van', 120],
-  ['Atlanta', 'GA', 'Miami', 'FL', 'Reefer', 80],
-  ['Seattle', 'WA', 'Denver', 'CO', 'Flatbed', 45],
-  ['Boston', 'MA', 'Newark', 'NJ', 'Dry Van', 60],
-  ['Phoenix', 'AZ', 'Las Vegas', 'NV', 'Reefer', 35],
-  ['Minneapolis', 'MN', 'Kansas City', 'MO', 'Dry Van', 90],
+  ['Chicago', 'IL', 'Dallas', 'TX', 'Dry Van', 120, RfpLaneStatus.Open],
+  ['Atlanta', 'GA', 'Miami', 'FL', 'Reefer', 80, RfpLaneStatus.Awarded],
+  ['Seattle', 'WA', 'Denver', 'CO', 'Flatbed', 45, RfpLaneStatus.Closed],
+  ['Boston', 'MA', 'Newark', 'NJ', 'Dry Van', 60, RfpLaneStatus.Open],
+  ['Phoenix', 'AZ', 'Las Vegas', 'NV', 'Reefer', 35, RfpLaneStatus.Awarded],
+  ['Minneapolis', 'MN', 'Kansas City', 'MO', 'Dry Van', 90, RfpLaneStatus.Closed],
+  ['Portland', 'OR', 'Boise', 'ID', 'Flatbed', 52, RfpLaneStatus.Open],
+  ['San Diego', 'CA', 'Tucson', 'AZ', 'Power Only', 40, RfpLaneStatus.Awarded],
+  ['Columbus', 'OH', 'Charlotte', 'NC', 'Dry Van', 110, RfpLaneStatus.Closed],
+  ['Nashville', 'TN', 'Orlando', 'FL', 'Reefer', 72, RfpLaneStatus.Open],
+  ['Salt Lake City', 'UT', 'Reno', 'NV', 'Flatbed', 58, RfpLaneStatus.Awarded],
+  ['Detroit', 'MI', 'Pittsburgh', 'PA', 'Power Only', 66, RfpLaneStatus.Closed],
+  ['Houston', 'TX', 'New Orleans', 'LA', 'Dry Van', 95, RfpLaneStatus.Open],
+  ['St. Louis', 'MO', 'Indianapolis', 'IN', 'Reefer', 84, RfpLaneStatus.Awarded],
+  ['Cleveland', 'OH', 'Buffalo', 'NY', 'Flatbed', 43, RfpLaneStatus.Closed],
+  ['Richmond', 'VA', 'Raleigh', 'NC', 'Power Only', 38, RfpLaneStatus.Open],
+  ['Omaha', 'NE', 'Des Moines', 'IA', 'Dry Van', 74, RfpLaneStatus.Awarded],
+  ['Memphis', 'TN', 'Little Rock', 'AR', 'Reefer', 68, RfpLaneStatus.Closed],
+  ['Los Angeles', 'CA', 'Fresno', 'CA', 'Flatbed', 57, RfpLaneStatus.Open],
+  ['San Antonio', 'TX', 'Oklahoma City', 'OK', 'Power Only', 48, RfpLaneStatus.Awarded],
+  ['Cincinnati', 'OH', 'Louisville', 'KY', 'Dry Van', 77, RfpLaneStatus.Closed],
+  ['Jacksonville', 'FL', 'Savannah', 'GA', 'Reefer', 63, RfpLaneStatus.Open],
+  ['Albuquerque', 'NM', 'El Paso', 'TX', 'Flatbed', 54, RfpLaneStatus.Awarded],
+  ['Milwaukee', 'WI', 'Grand Rapids', 'MI', 'Power Only', 49, RfpLaneStatus.Closed],
+  ['Kansas City', 'MO', 'Tulsa', 'OK', 'Dry Van', 88, RfpLaneStatus.Open],
+  ['Philadelphia', 'PA', 'Baltimore', 'MD', 'Reefer', 70, RfpLaneStatus.Awarded],
+  ['Sacramento', 'CA', 'Spokane', 'WA', 'Flatbed', 61, RfpLaneStatus.Closed],
+  ['Tampa', 'FL', 'Birmingham', 'AL', 'Power Only', 44, RfpLaneStatus.Open],
+  ['Fort Worth', 'TX', 'Shreveport', 'LA', 'Dry Van', 82, RfpLaneStatus.Awarded],
+  ['Madison', 'WI', 'Sioux Falls', 'SD', 'Reefer', 59, RfpLaneStatus.Closed],
+  ['Rochester', 'NY', 'Hartford', 'CT', 'Flatbed', 46, RfpLaneStatus.Open],
+  ['Fargo', 'ND', 'Billings', 'MT', 'Power Only', 36, RfpLaneStatus.Awarded],
+  ['Norfolk', 'VA', 'Charleston', 'SC', 'Dry Van', 91, RfpLaneStatus.Closed],
+  ['Bakersfield', 'CA', 'Yuma', 'AZ', 'Reefer', 55, RfpLaneStatus.Open],
+  ['Toledo', 'OH', 'Fort Wayne', 'IN', 'Flatbed', 47, RfpLaneStatus.Awarded],
+  ['Wichita', 'KS', 'Amarillo', 'TX', 'Power Only', 39, RfpLaneStatus.Closed],
 ] as const;
+
+const lanesPerRfp = 30;
 
 async function upsertTenant(input: { name: string; slug: string }) {
   const repository = AppDataSource.getRepository(Tenant);
@@ -124,7 +156,7 @@ async function seed() {
       }
 
       const laneOffset = rfpIndex * 3;
-      for (const laneInput of lanes.slice(laneOffset, laneOffset + 3)) {
+      for (const laneInput of lanes.slice(laneOffset, laneOffset + lanesPerRfp)) {
         const [originCity, originState, destinationCity, destinationState] = laneInput;
         const existingLane = await laneRepository.findOne({
           where: {
@@ -134,6 +166,7 @@ async function seed() {
             originState,
             destinationCity,
             destinationState,
+            equipmentType: laneInput[4],
           },
         });
 
@@ -148,7 +181,7 @@ async function seed() {
               destinationState,
               equipmentType: laneInput[4],
               estimatedVolume: laneInput[5],
-              status: RfpLaneStatus.Open,
+              status: laneInput[6],
             }),
           );
         }
