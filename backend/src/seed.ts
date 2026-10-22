@@ -12,38 +12,8 @@ import { User } from './users/user.entity';
 
 const password = 'Password123!';
 
-const tenants = [
-  {
-    name: 'Acme Logistics',
-    slug: 'acme-logistics',
-    users: [
-      { email: 'admin@acme.test', fullName: 'Acme Admin', role: TenantRole.Admin },
-      { email: 'user@acme.test', fullName: 'Acme User', role: TenantRole.User },
-    ],
-    rfps: [
-      { title: 'Acme Q3 Midwest Bid', customerName: 'Acme Foods' },
-      { title: 'Acme Southeast Contract Renewal', customerName: 'Acme Retail' },
-    ],
-  },
-  {
-    name: 'Bluebird Freight',
-    slug: 'bluebird-freight',
-    users: [
-      {
-        email: 'admin@bluebird.test',
-        fullName: 'Bluebird Admin',
-        role: TenantRole.Admin,
-      },
-      { email: 'user@bluebird.test', fullName: 'Bluebird User', role: TenantRole.User },
-    ],
-    rfps: [
-      { title: 'Bluebird Retail Expansion', customerName: 'Bluebird Retail' },
-      { title: 'Bluebird Refrigerated Network', customerName: 'Bluebird Cold Chain' },
-    ],
-  },
-];
-
-const lanes = [
+// Each tenant gets its own city pairs so cross-tenant leaks are obvious in the UI.
+const acmeLanes = [
   ['Chicago', 'IL', 'Dallas', 'TX', 'Dry Van', 120, RfpLaneStatus.Open],
   ['Atlanta', 'GA', 'Miami', 'FL', 'Reefer', 80, RfpLaneStatus.Awarded],
   ['Seattle', 'WA', 'Denver', 'CO', 'Flatbed', 45, RfpLaneStatus.Closed],
@@ -82,7 +52,83 @@ const lanes = [
   ['Wichita', 'KS', 'Amarillo', 'TX', 'Power Only', 39, RfpLaneStatus.Closed],
 ] as const;
 
+const bluebirdLanes = [
+  ['Austin', 'TX', 'Laredo', 'TX', 'Reefer', 64, RfpLaneStatus.Open],
+  ['Mobile', 'AL', 'Jackson', 'MS', 'Dry Van', 52, RfpLaneStatus.Awarded],
+  ['Baton Rouge', 'LA', 'Lafayette', 'LA', 'Flatbed', 41, RfpLaneStatus.Closed],
+  ['Knoxville', 'TN', 'Chattanooga', 'TN', 'Reefer', 73, RfpLaneStatus.Open],
+  ['Lexington', 'KY', 'Dayton', 'OH', 'Dry Van', 58, RfpLaneStatus.Awarded],
+  ['Columbia', 'SC', 'Augusta', 'GA', 'Power Only', 37, RfpLaneStatus.Closed],
+  ['Greenville', 'SC', 'Durham', 'NC', 'Reefer', 86, RfpLaneStatus.Open],
+  ['Tallahassee', 'FL', 'Pensacola', 'FL', 'Flatbed', 33, RfpLaneStatus.Awarded],
+  ['Gainesville', 'FL', 'Fort Myers', 'FL', 'Reefer', 92, RfpLaneStatus.Closed],
+  ['Wilmington', 'NC', 'Roanoke', 'VA', 'Dry Van', 47, RfpLaneStatus.Open],
+  ['Harrisburg', 'PA', 'Allentown', 'PA', 'Power Only', 51, RfpLaneStatus.Awarded],
+  ['Scranton', 'PA', 'Albany', 'NY', 'Reefer', 69, RfpLaneStatus.Closed],
+  ['Syracuse', 'NY', 'Burlington', 'VT', 'Flatbed', 34, RfpLaneStatus.Open],
+  ['Providence', 'RI', 'Worcester', 'MA', 'Dry Van', 78, RfpLaneStatus.Awarded],
+  ['Manchester', 'NH', 'Portland', 'ME', 'Reefer', 42, RfpLaneStatus.Closed],
+  ['Akron', 'OH', 'Lansing', 'MI', 'Power Only', 56, RfpLaneStatus.Open],
+  ['Flint', 'MI', 'Peoria', 'IL', 'Dry Van', 63, RfpLaneStatus.Awarded],
+  ['Rockford', 'IL', 'Green Bay', 'WI', 'Reefer', 71, RfpLaneStatus.Closed],
+  ['Duluth', 'MN', 'Cedar Rapids', 'IA', 'Flatbed', 38, RfpLaneStatus.Open],
+  ['Davenport', 'IA', 'Lincoln', 'NE', 'Dry Van', 67, RfpLaneStatus.Awarded],
+  ['Topeka', 'KS', 'Joplin', 'MO', 'Power Only', 45, RfpLaneStatus.Closed],
+  ['Fayetteville', 'AR', 'Fort Smith', 'AR', 'Reefer', 53, RfpLaneStatus.Open],
+  ['Santa Fe', 'NM', 'Las Cruces', 'NM', 'Flatbed', 32, RfpLaneStatus.Awarded],
+  ['Flagstaff', 'AZ', 'Mesa', 'AZ', 'Reefer', 76, RfpLaneStatus.Closed],
+  ['Ogden', 'UT', 'Provo', 'UT', 'Dry Van', 49, RfpLaneStatus.Open],
+  ['Cheyenne', 'WY', 'Casper', 'WY', 'Flatbed', 31, RfpLaneStatus.Awarded],
+  ['Rapid City', 'SD', 'Bismarck', 'ND', 'Power Only', 35, RfpLaneStatus.Closed],
+  ['Missoula', 'MT', 'Yakima', 'WA', 'Reefer', 44, RfpLaneStatus.Open],
+  ['Eugene', 'OR', 'Medford', 'OR', 'Dry Van', 57, RfpLaneStatus.Awarded],
+  ['Tacoma', 'WA', 'Eugene', 'OR', 'Reefer', 81, RfpLaneStatus.Closed],
+  ['Modesto', 'CA', 'Stockton', 'CA', 'Flatbed', 39, RfpLaneStatus.Open],
+  ['Riverside', 'CA', 'Oxnard', 'CA', 'Reefer', 93, RfpLaneStatus.Awarded],
+  ['Lubbock', 'TX', 'Corpus Christi', 'TX', 'Power Only', 50, RfpLaneStatus.Closed],
+] as const;
+
+const tenants = [
+  {
+    name: 'Acme Logistics',
+    slug: 'acme-logistics',
+    users: [
+      { email: 'admin@acme.test', fullName: 'Acme Admin', role: TenantRole.Admin },
+      { email: 'user@acme.test', fullName: 'Acme User', role: TenantRole.User },
+    ],
+    rfps: [
+      { title: 'Acme Q3 Midwest Bid', customerName: 'Acme Foods' },
+      { title: 'Acme Southeast Contract Renewal', customerName: 'Acme Retail' },
+    ],
+    lanes: acmeLanes,
+  },
+  {
+    name: 'Bluebird Freight',
+    slug: 'bluebird-freight',
+    users: [
+      {
+        email: 'admin@bluebird.test',
+        fullName: 'Bluebird Admin',
+        role: TenantRole.Admin,
+      },
+      { email: 'user@bluebird.test', fullName: 'Bluebird User', role: TenantRole.User },
+    ],
+    rfps: [
+      { title: 'Bluebird Retail Expansion', customerName: 'Bluebird Retail' },
+      { title: 'Bluebird Refrigerated Network', customerName: 'Bluebird Cold Chain' },
+    ],
+    lanes: bluebirdLanes,
+  },
+];
+
 const lanesPerRfp = 30;
+
+// Due dates are relative to the seed run so RFPs never look stale.
+function dueDateFromToday(daysAhead: number) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + daysAhead);
+  return date.toISOString().slice(0, 10);
+}
 
 async function upsertTenant(input: { name: string; slug: string }) {
   const repository = AppDataSource.getRepository(Tenant);
@@ -150,13 +196,16 @@ async function seed() {
             title: rfpInput.title,
             customerName: rfpInput.customerName,
             status: RfpStatus.Active,
-            dueDate: `2026-0${rfpIndex + 6}-15`,
+            dueDate: dueDateFromToday((rfpIndex + 1) * 30),
           }),
         );
       }
 
       const laneOffset = rfpIndex * 3;
-      for (const laneInput of lanes.slice(laneOffset, laneOffset + lanesPerRfp)) {
+      for (const laneInput of tenantInput.lanes.slice(
+        laneOffset,
+        laneOffset + lanesPerRfp,
+      )) {
         const [originCity, originState, destinationCity, destinationState] = laneInput;
         const existingLane = await laneRepository.findOne({
           where: {

@@ -1,4 +1,4 @@
-import { Alert, Button, Descriptions, Empty, Select, Space, Table, Tag, Typography, message } from 'antd';
+import { Alert, Descriptions,Empty, Select, Space, Table, Tag, Typography, message } from 'antd';
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getApiErrorMessage } from '../api/client';
@@ -48,20 +48,17 @@ export function RfpDetailPage() {
             <div className="page-title-row">
               <Typography.Title level={2}>{rfp.data.title}</Typography.Title>
               {isAdmin && (
-                <Space>
-                  <Select<Rfp['status']>
-                    value={rfp.data.status}
-                    loading={savingStatus}
-                    style={{ width: 160 }}
-                    onChange={onStatusChange}
-                    options={[
-                      { value: 'draft', label: 'Draft' },
-                      { value: 'active', label: 'Active' },
-                      { value: 'closed', label: 'Closed' },
-                    ]}
-                  />
-                  <Button loading={savingStatus}>Admin status action</Button>
-                </Space>
+                <Select<Rfp['status']>
+                  value={rfp.data.status}
+                  loading={savingStatus}
+                  style={{ width: 160 }}
+                  onChange={onStatusChange}
+                  options={[
+                    { value: 'draft', label: 'Draft' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'closed', label: 'Closed' },
+                  ]}
+                />
               )}
             </div>
             <Descriptions bordered size="small">

@@ -27,6 +27,22 @@ Only admin users can:
 
 The backend must enforce this permission rule. Hiding a button in the frontend is not enough.
 
+### Note Fields
+
+Each note has:
+
+| Field | Rules |
+| --- | --- |
+| Note text | Required. 1–2000 characters. |
+| Category | Required. One of `pricing`, `capacity`, `service`, `customer`, `other`. |
+| Priority | One of `low`, `medium`, `high`. Defaults to `medium`. |
+| Status | One of `open`, `in_progress`, `resolved`. Defaults to `open`. |
+| Author | The user who created the note. |
+| Resolved at | Set when a note moves to `resolved`; cleared if it is moved out of `resolved`. |
+| Created at / Updated at | Standard timestamps. |
+
+You choose the column names, types, and constraints.
+
 ### Database Requirements
 
 Design the database changes needed for lane notes and add them through a TypeORM migration.
@@ -137,8 +153,7 @@ All seeded accounts use `Password123!`.
 
 Your submission should include:
 
-- A feature branch created from the provided base branch.
-- A pull request with your completed implementation.
+- A pull request in your own private repository (see Git Workflow below).
 - The database migration.
 - Backend entity, module, service, controller, and DTOs.
 - Frontend API functions and UI.
@@ -151,15 +166,16 @@ Focus on correctness, tenant isolation, role authorization, query design, fronte
 
 ## Git Workflow
 
-Create a new branch for your work:
+Do not fork this repository or open pull requests against it. Your work should stay private.
 
-```bash
-git checkout -b feature/rfp-lane-notes
-```
+1. On GitHub, click **Use this template** → **Create a new repository**, and set the visibility to **Private**.
+2. Clone your new repository and create a branch for your work:
 
-When your implementation is ready:
+   ```bash
+   git checkout -b feature/rfp-lane-notes
+   ```
 
-- Commit your changes.
-- Push your branch.
-- Open a pull request against the provided base branch.
-- Include setup, migration, test, and manual verification notes in the pull request description.
+3. Commit your changes and push your branch.
+4. Open a pull request from your branch into `main` **within your private repository**.
+5. Include setup, migration, test, and manual verification notes in the pull request description.
+6. Invite the reviewer GitHub account named in your invitation email as a collaborator, then reply to that email with the pull request link.

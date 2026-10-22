@@ -13,17 +13,17 @@ import { Tenant } from '../tenants/tenant.entity';
 import { RfpLaneStatus } from './rfp-lane-status.enum';
 
 @Entity('rfp_lanes')
-@Index(['tenantId', 'rfpId'])
+@Index('idx_rfp_lanes_tenant_id_rfp_id', ['tenantId', 'rfpId'])
 export class RfpLane {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({ name: 'tenant_id' })
-  @Index()
+  @Index('idx_rfp_lanes_tenant_id')
   tenantId!: string;
 
   @Column({ name: 'rfp_id' })
-  @Index()
+  @Index('idx_rfp_lanes_rfp_id')
   rfpId!: string;
 
   @Column({ name: 'origin_city' })
@@ -48,16 +48,16 @@ export class RfpLane {
   status!: RfpLaneStatus;
 
   @ManyToOne(() => Tenant, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'tenant_id' })
+  @JoinColumn({ name: 'tenant_id', foreignKeyConstraintName: 'fk_rfp_lanes_tenant' })
   tenant!: Tenant;
 
   @ManyToOne(() => Rfp, (rfp) => rfp.lanes, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'rfp_id' })
+  @JoinColumn({ name: 'rfp_id', foreignKeyConstraintName: 'fk_rfp_lanes_rfp' })
   rfp!: Rfp;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

@@ -47,6 +47,7 @@ The seed data includes multiple RFPs and enough varied lanes per RFP to exercise
 
 ```bash
 npm run migration:run --workspace backend
+npm run migration:generate --workspace backend -- src/migrations/<Name>
 npm run seed --workspace backend
 npm test --workspace backend
 npm run build --workspace backend
